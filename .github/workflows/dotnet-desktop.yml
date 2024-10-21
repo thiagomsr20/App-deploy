@@ -49,7 +49,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Build Artifacts
-        path: $env:GITHUB_WORKSPACE/build_artifacts.zip
+        path: build_artifacts.zip
 
     - name: Send Zip file via HTTP POST with Authentication
       run: |
