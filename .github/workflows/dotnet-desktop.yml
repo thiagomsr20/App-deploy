@@ -43,16 +43,17 @@ jobs:
     - name: Listar arquivos no diretório bin/Release
       run: dir $env:Diretorio_Projeto_Wap
 
-    # Criar o arquivo ZIP dos artefatos de build com o nome do repositório e timestamp
+     # Criar o arquivo ZIP dos artefatos de build com o nome do repositório e timestamp
     - name: Criar arquivo ZIP dos artefatos de build com timestamp
       run: |
         $timeStamp = (Get-Date).ToString("ddMMyyyy")
         $files_in = "$env:Diretorio_Projeto_Wap"
-        $file_out = "$env:GITHUB_WORKSPACE/$timeStamp-${{ github.repository }}.zip"
+        $file_out = Join-Path -Path (Resolve-Path $env:GITHUB_WORKSPACE).Path -ChildPath "$timeStamp-${{ github.repository }}.zip"
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         [IO.Compression.ZipFile]::CreateFromDirectory($files_in, $file_out)
         echo "ZIP criado em: $file_out"
         echo "Arquivo gerado: $file_out"
+
 
     # Listar os arquivos no diretório de trabalho do GitHub após a criação do ZIP
     - name: Listar arquivos após gerar o ZIP
