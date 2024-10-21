@@ -36,8 +36,8 @@ jobs:
     - name: Create Zip file of build artifacts
       run: |
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Wap_Project_Directory", "$(Build.ArtifactStagingDirectory)/build_artifacts.zip")
-    
+        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Wap_Project_Directory", "$env:BUILD_ARTIFACTSTAGINGDIRECTORY/build_artifacts.zip")
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
