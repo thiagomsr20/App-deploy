@@ -15,61 +15,8 @@ jobs:
       Diretorio_Projeto_Wap: SolidWorksCustomCommunicatioExtension/bin/Release
 
     steps:
-    # Etapa de "checkout" do repositório, buscando o código mais recente
-    - name: Fazer checkout do código
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    # Instalação do .NET Core para garantir que a aplicação possa ser construída
-    - name: Instalar .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    # Instalação do MSBuild, necessário para compilar a solução
-    - name: Configurar MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
-
-    # Restaurar pacotes e dependências do projeto
-    - name: Restaurar pacotes da aplicação
-      run: msbuild $env:Nome_Solucao /t:Restore /p:Configuration=Release
-
-    # Compilar a solução da aplicação no modo Release
-    - name: Compilar a solução no modo Release
-      run: msbuild $env:Nome_Solucao /p:Configuration=Release
-
-    # Listar os arquivos gerados na pasta bin/Release
-    - name: Listar arquivos no diretório bin/Release
-      run: dir $env:Diretorio_Projeto_Wap
-
-     # Criar o arquivo ZIP dos artefatos de build com o nome do repositório e timestamp
-    - name: Criar arquivo ZIP dos artefatos de build com timestamp
-      run: |
-        $timeStamp = (Get-Date).ToString("ddMMyyyy")
-        $files_in = "$env:Diretorio_Projeto_Wap"
-        $file_out = Join-Path -Path (Resolve-Path $env:GITHUB_WORKSPACE).Path -ChildPath "$timeStamp-${{ github.repository }}.zip"
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [IO.Compression.ZipFile]::CreateFromDirectory($files_in, $file_out)
-        echo "ZIP criado em: $file_out"
-        echo "Arquivo gerado: $file_out"
-
-
-    # Listar os arquivos no diretório de trabalho do GitHub após a criação do ZIP
-    - name: Listar arquivos após gerar o ZIP
-      run: dir $env:GITHUB_WORKSPACE
-
-    # Fazer o upload do arquivo ZIP com os artefatos de build
-    - name: Fazer upload dos artefatos de build
-      uses: actions/upload-artifact@v3
-      with:
-        name: Artefatos_de_Build
-        path: $env:GITHUB_WORKSPACE/$timeStamp-${{ github.repository }}.zip
-
-    # Enviar o arquivo ZIP para a API via HTTP POST com autenticação
     - name: Enviar arquivo ZIP via HTTP POST com autenticação
       run: |
-        curl -X POST "https://aplicacoes/cliente/arquivos/projeto1" \
-          -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
-          -H "Content-Type: multipart/form-data" \
-          -F "file=@$env:GITHUB_WORKSPACE/$timeStamp-${{ github.repository }}.zip"
+        echo "${{ github.repository }}"
+        echo "${{ secrets.API_TOKEN }}"
+        echo "$env:GITHUB_WORKSPACE"
