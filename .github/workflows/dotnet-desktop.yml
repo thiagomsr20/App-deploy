@@ -1,5 +1,6 @@
 name: .NET Core Desktop
 
+# Definir que o pipeline será acionado ao fazer push ou pull request para o branch "main"
 on:
   push:
     branches: [ "main" ]
@@ -11,49 +12,59 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: SolidWorksCustomCommunicatioExtension
-      Wap_Project_Directory: SolidWorksCustomCommunicatioExtension/bin/Release
+      Nome_Solucao: SolidWorksCustomCommunicatioExtension
+      Diretorio_Projeto_Wap: SolidWorksCustomCommunicatioExtension/bin/Release
 
     steps:
-    - name: Checkout
+    # Etapa de "checkout" do repositório, buscando o código mais recente
+    - name: Fazer checkout do código
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: Install .NET Core
+    # Instalação do .NET Core para garantir que a aplicação possa ser construída
+    - name: Instalar .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-    - name: Setup MSBuild.exe
+    # Instalação do MSBuild, necessário para compilar a solução
+    - name: Configurar MSBuild.exe
       uses: microsoft/setup-msbuild@v2
 
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
+    # Restaurar pacotes e dependências do projeto
+    - name: Restaurar pacotes da aplicação
+      run: msbuild $env:Nome_Solucao /t:Restore /p:Configuration=Release
 
-    - name: Build the solution
-      run: msbuild $env:Solution_Name /p:Configuration=Release
+    # Compilar a solução da aplicação no modo Release
+    - name: Compilar a solução no modo Release
+      run: msbuild $env:Nome_Solucao /p:Configuration=Release
 
-    - name: List files in bin/Release directory
+    # Listar os arquivos gerados na pasta bin/Release
+    - name: Listar arquivos no diretório bin/Release
       run: dir SolidWorksCustomCommunicatioExtension/bin/Release
 
-    - name: Create Zip file of build artifacts
+    # Criar o arquivo ZIP dos artefatos de build com o nome do repositório
+    - name: Criar arquivo ZIP dos artefatos de build
       run: |
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Wap_Project_Directory", "$env:GITHUB_WORKSPACE/build_artifacts.zip")
+        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Diretorio_Projeto_Wap", "$env:GITHUB_WORKSPACE/${{ github.repository }}.zip")
 
-    - name: List files in build directory
+    # Listar os arquivos no diretório de trabalho do GitHub após a criação do ZIP
+    - name: Listar arquivos no diretório de build
       run: dir $env:GITHUB_WORKSPACE
 
-    - name: Upload build artifacts
+    # Fazer o upload do arquivo ZIP com o nome do repositório
+    - name: Fazer upload dos artefatos de build
       uses: actions/upload-artifact@v3
       with:
-        name: Build Artifacts
-        path: build_artifacts.zip
+        name: Artefatos_de_Build
+        path: $env:GITHUB_WORKSPACE/${{ github.repository }}.zip
 
-    - name: Send Zip file via HTTP POST with Authentication
+    # Enviar o arquivo ZIP para a API via HTTP POST com autenticação
+    - name: Enviar arquivo ZIP via HTTP POST com autenticação
       run: |
         curl -X POST "https://aplicacoes/cliente/arquivos/projeto1" \
           -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
           -H "Content-Type: multipart/form-data" \
-          -F "file=@$env:GITHUB_WORKSPACE/build_artifacts.zip"
+          -F "file=@$env:GITHUB_WORKSPACE/${{ github.repository }}.zip"
