@@ -1,6 +1,5 @@
 name: .NET Core Desktop
 
-# Definir que o pipeline será acionado ao fazer push ou pull request para o branch "main"
 on:
   push:
     branches: [ "main" ]
@@ -42,37 +41,34 @@ jobs:
 
     # Listar os arquivos gerados na pasta bin/Release
     - name: Listar arquivos no diretório bin/Release
-      run: dir SolidWorksCustomCommunicatioExtension/bin/Release
+      run: dir $env:Diretorio_Projeto_Wap
 
-    # Verificar valor da variável Diretorio_Projeto_Wap
-    - name: Verificar Diretório WAP
-      run: echo $env:Diretorio_Projeto_Wap
-
-    # Criar o arquivo ZIP dos artefatos de build com o nome do repositório
-    - name: Criar arquivo ZIP dos artefatos de build
+    # Criar o arquivo ZIP dos artefatos de build com o nome do repositório e timestamp
+    - name: Criar arquivo ZIP dos artefatos de build com timestamp
       run: |
+        $timeStamp = (Get-Date).ToString("ddMMyyyy")
+        $files_in = "$env:Diretorio_Projeto_Wap"
+        $file_out = "$env:GITHUB_WORKSPACE/$timeStamp-${{ github.repository }}.zip"
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        if (Test-Path "$env:Diretorio_Projeto_Wap") {
-            [IO.Compression.ZipFile]::CreateFromDirectory("$env:Diretorio_Projeto_Wap", "$env:GITHUB_WORKSPACE/${{ github.repository }}.zip")
-        } else {
-            Write-Error "O diretório $env:Diretorio_Projeto_Wap não foi encontrado"
-        }
+        [IO.Compression.ZipFile]::CreateFromDirectory($files_in, $file_out)
+        echo "ZIP criado em: $file_out"
+        echo "Arquivo gerado: $file_out"
 
     # Listar os arquivos no diretório de trabalho do GitHub após a criação do ZIP
-    - name: Listar arquivos no diretório de build
+    - name: Listar arquivos após gerar o ZIP
       run: dir $env:GITHUB_WORKSPACE
 
-    # Fazer o upload do arquivo ZIP com o nome do repositório
+    # Fazer o upload do arquivo ZIP com os artefatos de build
     - name: Fazer upload dos artefatos de build
       uses: actions/upload-artifact@v3
       with:
         name: Artefatos_de_Build
-        path: $env:GITHUB_WORKSPACE/${{ github.repository }}.zip
+        path: $env:GITHUB_WORKSPACE/$timeStamp-${{ github.repository }}.zip
 
     # Enviar o arquivo ZIP para a API via HTTP POST com autenticação
     - name: Enviar arquivo ZIP via HTTP POST com autenticação
       run: |
         curl -X POST "https://aplicacoes/cliente/arquivos/projeto1" \
-          -H "Authorization: Bearer ${{secrets.API_TOKEN}}" \
+          -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
           -H "Content-Type: multipart/form-data" \
-          -F "file=@$env:GITHUB_WORKSPACE/${{github.repository}}.zip"
+          -F "file=@$env:GITHUB_WORKSPACE/$timeStamp-${{ github.repository }}.zip"
