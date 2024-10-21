@@ -99,20 +99,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="SolidWorks.Interop.sldworks">
-      <HintPath>..\..\..\..\..\..\Program Files\SOLIDWORKS Corp\SOLIDWORKS\\SolidWorks.Interop.sldworks.dll</HintPath>
+    <Reference Include="SolidWorks.Interop.sldworks, Version=32.1.0.123, Culture=neutral, PublicKeyToken=7c4797c3e4eeac03, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>libs\SolidWorks.Interop.sldworks.dll</HintPath>
     </Reference>
-    <Reference Include="SolidWorks.Interop.swconst">
-      <HintPath>..\..\..\..\..\..\Program Files\SOLIDWORKS Corp\SOLIDWORKS\\SolidWorks.Interop.swconst.dll</HintPath>
+    <Reference Include="SolidWorks.Interop.swconst, Version=32.1.0.123, Culture=neutral, PublicKeyToken=19f43e188e4269d8, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>libs\SolidWorks.Interop.swconst.dll</HintPath>
     </Reference>
-    <Reference Include="SolidWorks.Interop.swpublished">
-      <HintPath>..\..\..\..\..\..\Program Files\SOLIDWORKS Corp\SOLIDWORKS\\SolidWorks.Interop.swpublished.dll</HintPath>
+    <Reference Include="SolidWorks.Interop.swpublished, Version=32.1.0.123, Culture=neutral, PublicKeyToken=89a97bdc5284e6d8, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>libs\SolidWorks.Interop.swpublished.dll</HintPath>
     </Reference>
-    <Reference Include="SolidWorksTools">
-      <HintPath>..\..\..\..\..\..\Program Files\SOLIDWORKS Corp\SOLIDWORKS\\SolidWorksTools.dll</HintPath>
+    <Reference Include="SolidWorksTools, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bd18593873b4686d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\SolidWorksTools.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -161,6 +165,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="SolidWorksCustomCommunicatioExtension.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libs\SolidWorks.Interop.sldworks.dll" />
+    <Content Include="libs\SolidWorks.Interop.swconst.dll" />
+    <Content Include="libs\SolidWorks.Interop.swpublished.dll" />
+    <Content Include="libs\SolidWorksTools.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
