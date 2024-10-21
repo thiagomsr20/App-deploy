@@ -1,4 +1,4 @@
-name: .NET Core Desktop
+name: Configuração de pipeline para integradores
 
 on:
   push:
@@ -15,8 +15,31 @@ jobs:
       Diretorio_Projeto_Wap: SolidWorksCustomCommunicatioExtension/bin/Release
 
     steps:
-    - name: Enviar arquivo ZIP via HTTP POST com autenticação
+    - name: Fazer checkout do código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Instalar .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Configurar MSBuild.exe
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Compilar a solução no modo Release
+      run: msbuild $env:Nome_Solucao /p:Configuration=Release
+
+    - name: Listar arquivos no diretório bin/Release
+      run: dir SolidWorksCustomCommunicatioExtension/bin/Release
+
+    - name: Listar arquivos do repositório
+      run: dir $env:GITHUB_WORKSPACE
+
+    steps:
+    - name: Printa caminhos e variaveis
       run: |
         echo "${{ github.repository }}"
-        echo "${{ secrets.API_TOKEN }}"
         echo "$env:GITHUB_WORKSPACE"
+        echo "$env:Nome_Solucao"
