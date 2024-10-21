@@ -329,7 +329,7 @@ namespace SolidWorksCustomCommunicatioExtension
             // To see this menu, right click on any face in the part
             Frame swFrame;
 
-            swFrame = iSwApp.Frame();
+            swFrame = (Frame)iSwApp.Frame();
             bResult = swFrame.AddMenuPopupIcon3((int)swDocumentTypes_e.swDocPART, (int)swSelectType_e.swSelFACES, "third-party context-sensitive CSharp", addinID,
                                                 "PopupCallbackFunction", "PopupEnable", "", cmdGroup.MainIconList);
 
