@@ -52,7 +52,11 @@ jobs:
     - name: Criar arquivo ZIP dos artefatos de build
       run: |
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Diretorio_Projeto_Wap", "$env:GITHUB_WORKSPACE/${{github.repository}}.zip")
+        if (Test-Path "$env:Diretorio_Projeto_Wap") {
+            [IO.Compression.ZipFile]::CreateFromDirectory("$env:Diretorio_Projeto_Wap", "$env:GITHUB_WORKSPACE/${{ github.repository }}.zip")
+        } else {
+            Write-Error "O diretório $env:Diretorio_Projeto_Wap não foi encontrado"
+        }
 
     # Listar os arquivos no diretório de trabalho do GitHub após a criação do ZIP
     - name: Listar arquivos no diretório de build
