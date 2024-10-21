@@ -34,13 +34,16 @@ jobs:
     - name: Build the solution
       run: msbuild $env:Solution_Name /p:Configuration=Release
 
-    - name: Check if Wap_Project_Directory exists
+    - name: Check if bin/Release exists
       run: |
         if (Test-Path "$env:Wap_Project_Directory") {
           echo "Directory exists: $env:Wap_Project_Directory"
         } else {
           echo "Directory does not exist: $env:Wap_Project_Directory"
         }
+
+    - name: List files in bin/Release directory
+      run: dir SolidWorksCustomCommunicatioExtension/bin/Release
 
     - name: Create Zip file of build artifacts
       run: |
@@ -58,7 +61,7 @@ jobs:
 
     - name: Send Zip file via HTTP POST with Authentication
       run: |
-        curl -X POST "https://aplicações/cliente/arquivos/projeto1" \
+        curl -X POST "https://aplicacoes/cliente/arquivos/projeto1" \
           -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
           -H "Content-Type: multipart/form-data" \
           -F "file=@$env:BUILD_ARTIFACTSTAGINGDIRECTORY/build_artifacts.zip"
