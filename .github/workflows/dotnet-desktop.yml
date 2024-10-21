@@ -1,0 +1,52 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: SolidWorksCustomCommunicatioExtension
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
+
+    - name: Build the solution
+      run: msbuild $env:Solution_Name /p:Configuration=Release
+
+    - name: Create Zip file of build artifacts
+      run: |
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Wap_Project_Directory", "$(Build.ArtifactStagingDirectory)/build_artifacts.zip")
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Build Artifacts
+        path: $(Build.ArtifactStagingDirectory)/build_artifacts.zip
+
+    - name: Send Zip file via HTTP POST with Authentication
+      run: |
+        curl -X POST "https://aplicações/cliente/arquivos/projeto1" \
+          -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
+          -H "Content-Type: multipart/form-data" \
+          -F "file=@$(Build.ArtifactStagingDirectory)/build_artifacts.zip"
