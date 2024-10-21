@@ -36,8 +36,7 @@ jobs:
 
     - name: Listar arquivos do repositório
       run: dir $env:GITHUB_WORKSPACE
-
-    steps:
+      
     - name: Printa caminhos e variaveis
       run: |
         echo "${{ github.repository }}"
