@@ -44,11 +44,15 @@ jobs:
     - name: Listar arquivos no diretório bin/Release
       run: dir SolidWorksCustomCommunicatioExtension/bin/Release
 
+    # Verificar valor da variável Diretorio_Projeto_Wap
+    - name: Verificar Diretório WAP
+      run: echo $env:Diretorio_Projeto_Wap
+
     # Criar o arquivo ZIP dos artefatos de build com o nome do repositório
     - name: Criar arquivo ZIP dos artefatos de build
       run: |
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Diretorio_Projeto_Wap", "$env:GITHUB_WORKSPACE/${{ github.repository }}.zip")
+        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Diretorio_Projeto_Wap", "$env:GITHUB_WORKSPACE/${{github.repository}}.zip")
 
     # Listar os arquivos no diretório de trabalho do GitHub após a criação do ZIP
     - name: Listar arquivos no diretório de build
@@ -65,6 +69,6 @@ jobs:
     - name: Enviar arquivo ZIP via HTTP POST com autenticação
       run: |
         curl -X POST "https://aplicacoes/cliente/arquivos/projeto1" \
-          -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
+          -H "Authorization: Bearer ${{secrets.API_TOKEN}}" \
           -H "Content-Type: multipart/form-data" \
-          -F "file=@$env:GITHUB_WORKSPACE/${{ github.repository }}.zip"
+          -F "file=@$env:GITHUB_WORKSPACE/${{github.repository}}.zip"
