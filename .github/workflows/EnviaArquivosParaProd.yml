@@ -42,9 +42,8 @@ jobs:
     - name: Listar arquivos do repositório
       run: dir $env:GITHUB_WORKSPACE
 
-    - name: Printa caminhos e variaveis
-      run: |
-        echo "${{ github.repository }}"
-        echo "$env:GITHUB_WORKSPACE"
-        echo "$env:Nome_Solucao"
-        echo "$env:Diretorio_Projeto_Wap"
+    - name: Upload do artefato de build (arquivo ZIP)
+      uses: actions/upload-artifact@v3
+      with:
+        name: Release.zip
+        path: $env:GITHUB_WORKSPACE/Release.zip
