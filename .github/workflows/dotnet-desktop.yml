@@ -34,34 +34,26 @@ jobs:
     - name: Build the solution
       run: msbuild $env:Solution_Name /p:Configuration=Release
 
-    - name: Check if bin/Release exists
-      run: |
-        if (Test-Path "$env:Wap_Project_Directory") {
-          echo "Directory exists: $env:Wap_Project_Directory"
-        } else {
-          echo "Directory does not exist: $env:Wap_Project_Directory"
-        }
-
     - name: List files in bin/Release directory
       run: dir SolidWorksCustomCommunicatioExtension/bin/Release
 
     - name: Create Zip file of build artifacts
       run: |
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Wap_Project_Directory", "$env:BUILD_ARTIFACTSTAGINGDIRECTORY/build_artifacts.zip")
+        [IO.Compression.ZipFile]::CreateFromDirectory("$env:Wap_Project_Directory", "$env:GITHUB_WORKSPACE/build_artifacts.zip")
 
     - name: List files in build directory
-      run: dir $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+      run: dir $env:GITHUB_WORKSPACE
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Build Artifacts
-        path: $env:BUILD_ARTIFACTSTAGINGDIRECTORY/build_artifacts.zip
+        path: $env:GITHUB_WORKSPACE/build_artifacts.zip
 
     - name: Send Zip file via HTTP POST with Authentication
       run: |
         curl -X POST "https://aplicacoes/cliente/arquivos/projeto1" \
           -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
           -H "Content-Type: multipart/form-data" \
-          -F "file=@$env:BUILD_ARTIFACTSTAGINGDIRECTORY/build_artifacts.zip"
+          -F "file=@$env:GITHUB_WORKSPACE/build_artifacts.zip"
